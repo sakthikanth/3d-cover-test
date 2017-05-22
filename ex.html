@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" href="style.css">
+        <script>            
+
+            addEventListener('load', function() {
+                var cnv = gid('q');
+                var ctx = cnv.getContext('2d');
+                // характеризует сдвиг графика по оси Oy. Чем больше a, тем выше поднимается график
+                var a = cnv.height / 2;
+                // характеризует растяжение графика по оси Oy. Чем больше увеличивается b, тем сильнее возрастает амплитуда колебаний
+                var b = 10;
+                // характеризует растяжение графика по оси Ox. При увеличении c частота колебаний повышается
+                var c = .05;
+                // характеризует сдвиг графика по оси Ox. При увеличении d график двигается в положительном направлении оси абсцисс
+                var d = 0;
+
+                for (var i = 0; i < cnv.width; ++i) {
+                    ctx.fillRect(i, ( a + b * Math.sin(c * i + d) ), 1, 1);
+                }
+
+                var cnv1 = gid('e');
+                var ctx1 = cnv1.getContext('2d');
+                ctx1.font = 'bold 30px Calibri';
+                ctx1.fillText('Hello', 10, 30);
+                var imd = ctx1.getImageData(0, 0, cnv1.width, cnv1.height);
+
+                var cnv2 = gid('r');
+                var ctx2 = cnv2.getContext('2d');
+                ctx2.fillRect(0, 0, cnv2.width, cnv2.height);
+                var imd1 = ctx2.getImageData(0, 0, cnv2.width, cnv2.height);
+                var w = imd.width * 4;
+
+                for (var i = 0, j, x, y, d = imd.data, d1 = imd1.data, l = d.length; i < l; i += 4) {
+                    y = Math.floor(i / w);
+                    x = i - w * y;   
+                    j =  ( y + Math.floor( 10 * Math.sin(.01 * x) ) ) * w + x;
+                    d1[j] = d[i];
+                    d1[j + 1] = d[i + 1];
+                    d1[j + 2] = d[i + 2];
+                    d1[j + 3] = d[i + 3];
+                }
+
+        ctx2.putImageData(imd1, 0, 0);
+            });
+
+        </script>
+    </head>
+    <body>
+        <canvas id="q" width="140" height="40"></canvas>
+        <p>График синусоиды.</p>
+        <canvas id="e" width="140" height="40"></canvas>
+        <p>Изображение без искажения.</p>
+        <canvas id="r" width="140" height="40"></canvas>
+        <p>Изображение с искажением.</p>
+    </body>
+</html>

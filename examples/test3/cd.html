@@ -1,0 +1,86 @@
+<!-- vertex shader -->
+<script id="2d-vertex-shader" type="x-shader/x-vertex">
+attribute vec2 a_position;
+attribute vec2 a_texCoord;
+
+uniform vec2 u_resolution;
+
+varying vec2 v_texCoord;
+
+void main() {
+   // convert the rectangle from pixels to 0.0 to 1.0
+   vec2 zeroToOne = a_position / u_resolution;
+
+   // convert from 0->1 to 0->2
+   vec2 zeroToTwo = zeroToOne * 2.0;
+
+   // convert from 0->2 to -1->+1 (clipspace)
+   vec2 clipSpace = zeroToTwo - 1.0;
+
+   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+
+   // pass the texCoord to the fragment shader
+   // The GPU will interpolate this value between points.
+   v_texCoord = a_texCoord;
+}
+</script>
+<!-- fragment shader -->
+<script id="2d-fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+// our texture
+uniform sampler2D u_image;
+
+// the texCoords passed in from the vertex shader.
+varying vec2 v_texCoord;
+
+void main() {
+   gl_FragColor = texture2D(u_image, v_texCoord);
+}
+</script>
+
+
+<script id="2d-fragment-shader-haze" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D u_image; // our texture
+uniform float time;
+
+// the texCoords passed in from the vertex shader.
+varying vec2 v_texCoord;
+
+void main() {
+   float frequency=50.0;
+   float amplitude=0.005;
+   float speed=0.03;
+	 float distortion= sin(v_texCoord.y*frequency+time*speed)*amplitude;
+   vec4 color = texture2D(u_image,vec2(v_texCoord.x+distortion, v_texCoord.y));
+   gl_FragColor = color;
+   //texture2D(u_image, v_texCoord);
+}
+</script>
+
+<script id="2d-fragment-shader-haze-mouse" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D u_image; // our texture
+uniform float time;
+uniform vec2 mouse;
+
+float frequency=20.0;
+float amplitude=0.005;
+float speed=0.02;
+   
+// the texCoords passed in from the vertex shader.
+varying vec2 v_texCoord;
+void main() {
+	 float distortionX= v_texCoord.x + sin(v_texCoord.y*frequency + time*speed)*amplitude;
+	 float distortionY= v_texCoord.y + sin(v_texCoord.x*frequency + time*speed)*amplitude;
+	 //float distortionX= v_texCoord.x + (v_texCoord.x*frequency) + (time*speed*amplitude);
+	 //float distortionY= v_texCoord.y + (v_texCoord.y*frequency) + (time*speed*amplitude);
+   
+   // Mouse parallax
+   vec2 parallax=mouse*0.01;
+   vec2 distortedPosition=vec2(distortionX, distortionY);
+   vec4 color = texture2D(u_image, distortedPosition+parallax);
+   gl_FragColor = color;
+}
+</script>

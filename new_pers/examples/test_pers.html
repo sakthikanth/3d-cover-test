@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <script src="jquery.js" charset="utf-8"></script>
+   <script src="../dist/html2canvas.js" charset="utf-8"></script>
+</head>
+<body id="body_id">
+
+   <canvas id="myCanvas" width="500" height="150"style="transform: matrix3d(0.740893, 0.144854, 0, -0.000130876, 0.00813803, 0.894272, 0, -4.1071e-05, 0, 0, 1, 0, -48.8177, -10.3744, 0, 1);border:1px solid #d3d3d3;" >
+      Your browser does not support the HTML5 canvas tag.</canvas>
+
+      <script>
+      $(document).ready(function(){
+
+         var c = document.getElementById("myCanvas");
+         var ctx = c.getContext("2d");
+         var imgData = ctx.createImageData(500, 150);
+
+         var i;
+         for (i = 0; i < imgData.data.length; i += 4) {
+            imgData.data[i+0] = 255;
+            imgData.data[i+1] = 0;
+            imgData.data[i+2] = 0;
+            imgData.data[i+3] = 255;
+         }
+
+         ctx.putImageData(imgData, 0, 0);
+         //      img_data = ctx.getImageData(10,10,c.width,c.height);
+
+
+
+         $('#c_img').attr('src',c.toDataURL());
+      });
+
+      function convert_this(){
+         var target = document.getElementById("body_id");
+         html2canvas(target, {
+            onrendered: function (canvas) {
+               var imgageData = canvas.toDataURL("image/png");
+               var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+               var link = document.createElement("a");
+               link.style.display = "none";
+               link.setAttribute("download", "myImage.png");
+               link.setAttribute("href", newData);
+               document.body.appendChild(link);
+               link.click();
+               link.remove();
+            }
+         });
+      }
+      </script>
+      <canvas id="canvas2" width="300" height="300"></canvas>
+      <p id="my"><strong>Note:</strong> The canvas tag is not supported in Internet
+         Explorer 8 and earlier versions.</p>
+         <div class="imgs">
+            <img src="" id="c_img" alt="">
+         </div>
+         <button type="button" onclick="convert_this()" name="button">convert</button>
+
+      </body>
+      </html>

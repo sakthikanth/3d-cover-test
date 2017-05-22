@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>webgl-distort</title>
+  <script src="../bower_components/glfx-js/dist/glfx.js"></script>
+  <script src="../dist/webgl-distort.js"></script>
+</head>
+<body>
+
+  <img id="img" src="example-4000x3000.jpg" />
+
+  <script>
+    (function() {
+ 
+      warpWebGl(
+        'img',
+        [0, 0,     4000, 0,     4000, 3000,   0,   3000], 
+        [0, 100,   4000, 400,   3800, 2400,   300, 2200]
+      );
+ 
+    })();
+  </script>
+
+</body>
+</html>
